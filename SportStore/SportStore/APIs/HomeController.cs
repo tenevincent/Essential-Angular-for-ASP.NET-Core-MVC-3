@@ -14,32 +14,32 @@ namespace SportStore.APIs
     [ApiController]
     public class HomeController : Controller
     {
-        private ApplicationDbContext context;
+        private DataContext context;
 
-        public HomeController(ApplicationDbContext ctx)
+        public HomeController(DataContext ctx)
         {
             context = ctx;
         }
 
-        public IActionResult Index()
-        {
-            return View(context.Products.First());
-        }
+        //public IActionResult Index()
+        //{
+        //    return View(context.Products.First());
+        //}
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
+        //public IActionResult Privacy()
+        //{
+        //    return View();
+        //}
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None,
-            NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel
-            {
-                RequestId = Activity.Current?.Id
-                ?? HttpContext.TraceIdentifier
-            });
-        }
+        //[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None,
+        //    NoStore = true)]
+        //public IActionResult Error()
+        //{
+        //    return View(new ErrorViewModel
+        //    {
+        //        RequestId = Activity.Current?.Id
+        //        ?? HttpContext.TraceIdentifier
+        //    });
+        //}
     }
 }

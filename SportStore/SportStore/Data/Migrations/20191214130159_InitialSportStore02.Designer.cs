@@ -9,7 +9,7 @@ using SportStore.Data;
 
 namespace SportStore.Data.Migrations
 {
-    [DbContext(typeof(ApplicationDbContext))]
+    [DbContext(typeof(DataContext))]
     [Migration("20191214130159_InitialSportStore02")]
     partial class InitialSportStore02
     {

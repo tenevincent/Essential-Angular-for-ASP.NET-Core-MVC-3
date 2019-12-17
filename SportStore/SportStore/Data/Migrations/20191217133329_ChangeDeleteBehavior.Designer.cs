@@ -10,8 +10,8 @@ using SportStore.Data;
 namespace SportStore.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20191214123349_InitialSportStore")]
-    partial class InitialSportStore
+    [Migration("20191217133329_ChangeDeleteBehavior")]
+    partial class ChangeDeleteBehavior
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -238,6 +238,76 @@ namespace SportStore.Data.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("SportStore.BusinessModel.Models.Product", b =>
+                {
+                    b.Property<long>("ProductId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Category")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(8, 2)");
+
+                    b.Property<long?>("SupplierId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("ProductId");
+
+                    b.HasIndex("SupplierId");
+
+                    b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("SportStore.BusinessModel.Models.Rating", b =>
+                {
+                    b.Property<long>("RatingId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<long?>("ProductId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("Stars")
+                        .HasColumnType("int");
+
+                    b.HasKey("RatingId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("Ratings");
+                });
+
+            modelBuilder.Entity("SportStore.BusinessModel.Models.Supplier", b =>
+                {
+                    b.Property<long>("SupplierId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("City")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("State")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("SupplierId");
+
+                    b.ToTable("Suppliers");
+                });
+
             modelBuilder.Entity("SportStore.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
@@ -352,6 +422,20 @@ namespace SportStore.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("SportStore.BusinessModel.Models.Product", b =>
+                {
+                    b.HasOne("SportStore.BusinessModel.Models.Supplier", "Supplier")
+                        .WithMany("Products")
+                        .HasForeignKey("SupplierId");
+                });
+
+            modelBuilder.Entity("SportStore.BusinessModel.Models.Rating", b =>
+                {
+                    b.HasOne("SportStore.BusinessModel.Models.Product", "Product")
+                        .WithMany("Ratings")
+                        .HasForeignKey("ProductId");
                 });
 #pragma warning restore 612, 618
         }

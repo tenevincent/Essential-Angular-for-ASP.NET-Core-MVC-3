@@ -8,7 +8,7 @@ using SportStore.Data;
 
 namespace SportStore.Data.Migrations
 {
-    [DbContext(typeof(ApplicationDbContext))]
+    [DbContext(typeof(DataContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
@@ -426,14 +426,16 @@ namespace SportStore.Data.Migrations
                 {
                     b.HasOne("SportStore.BusinessModel.Models.Supplier", "Supplier")
                         .WithMany("Products")
-                        .HasForeignKey("SupplierId");
+                        .HasForeignKey("SupplierId")
+                        .OnDelete(DeleteBehavior.SetNull);
                 });
 
             modelBuilder.Entity("SportStore.BusinessModel.Models.Rating", b =>
                 {
                     b.HasOne("SportStore.BusinessModel.Models.Product", "Product")
                         .WithMany("Ratings")
-                        .HasForeignKey("ProductId");
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }

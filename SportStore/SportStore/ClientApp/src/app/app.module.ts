@@ -14,6 +14,10 @@ import { AuthorizeGuard } from 'src/api-authorization/authorize.guard';
 import { AuthorizeInterceptor } from 'src/api-authorization/authorize.interceptor';
 import { ModelModule } from './models/model/model.module';
 import { Product } from './models/product.model';
+import { ProductModule } from './product/product.module';
+import { ProductTableComponent } from './product/product-table/product-table.component';
+import { ProductDetailsComponent } from './product/product-details/product-details.component';
+import { EditProductComponent } from './product/edit-product/edit-product.component';
 
 @NgModule({
   declarations: [
@@ -29,12 +33,16 @@ import { Product } from './models/product.model';
     FormsModule,
     ApiAuthorizationModule,
     ModelModule,
+    ProductModule,
     RouterModule.forRoot([
-      { path: '', component: HomeComponent, pathMatch: 'full' },
+      { path: '', component: ProductTableComponent , pathMatch: 'full' },
+      { path: "table", component: ProductTableComponent },
+      { path: "detail", component: ProductDetailsComponent },
+      { path: "detail/:id", component: ProductDetailsComponent },    
+      { path: "edit-product/:id", component: EditProductComponent },    
+       
       { path: 'counter', component: CounterComponent },
-      { path: 'product', component: CounterComponent },
-      
-
+      { path: 'product', component: CounterComponent },      
       { path: 'fetch-data', component: FetchDataComponent, canActivate: [AuthorizeGuard] },
     ])
   ],

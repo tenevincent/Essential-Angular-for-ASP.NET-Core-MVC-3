@@ -10,7 +10,7 @@ namespace SportStore.Data
     public class SeedData
     {
 
-        public static void SeedDatabase(ApplicationDbContext context)
+        public static void SeedDatabase(DataContext context)
         {
 
             context.Database.Migrate();
