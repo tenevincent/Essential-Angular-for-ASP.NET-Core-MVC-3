@@ -12,47 +12,38 @@ import { ProductDetailsComponent } from '../product-details/product-details.comp
 })
 export class EditProductComponent implements OnInit {
 
- 
 
-  /*
-  name : string;
-  category : string;
-  price : Number;
- */
+  formEditProduct: FormGroup;
 
 
-  constructor(private repo: ProductsRepository,
-    private router: Router,
-    private activeRoute: ActivatedRoute) {
+
+  constructor(private formbuilder: FormBuilder, private repo: ProductsRepository, private router: Router, private activeRoute: ActivatedRoute) {
 
 
-   
+    this.formEditProduct = formbuilder.group({
+      productName: [''],
+      productCategory: [this.product.category],
+      productPrice: [this.product.price]
+    })
 
   }
 
+
+
   ngOnInit() {
+
     let id = Number.parseInt(this.activeRoute.snapshot.params["id"]);
-    console.log("retrieve id: " + id);
     if (id) {
       this.repo.getProduct(id);
     } else {
       this.router.navigateByUrl("/");
     }
-    console.log( ("current product: " + this.repo.product ));
-
-
-    /*
-    this.name = this.product.name;
-    this.category = this.product.category;
-    this.price = this.product.price;
-    */
-    
 
   }
 
   editProduct() {
     this.repo.replaceProduct(this.repo.product);
-    
+
     this.router.navigate([""]);
   }
 

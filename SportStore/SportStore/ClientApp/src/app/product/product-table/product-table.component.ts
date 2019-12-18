@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ProductsRepository } from 'src/app/repositories/products.repository';
 import { Router } from '@angular/router';
 import { Product } from 'src/app/models/product.model';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
 @Component({
   selector: 'product-table',
@@ -10,13 +11,31 @@ import { Product } from 'src/app/models/product.model';
 })
 export class ProductTableComponent implements OnInit {
 
+
   showEditProductPopUp: boolean;
   showDeletePopUp: boolean;
 
+  formEditProduct: FormGroup;
 
 
-  constructor(private repo: ProductsRepository,
-    private router: Router) { }
+  constructor(private formbuilder: FormBuilder, private repo: ProductsRepository, private router: Router) {
+
+
+
+  }
+
+  ngOnInit(): void {
+    this.buildFormControls(this.formbuilder);
+  }
+
+
+  private buildFormControls(formbuilder: FormBuilder) {
+    this.formEditProduct = formbuilder.group({
+      productName: ['', Validators.required],
+      productCategory: ['', Validators.required],
+      productPrice: ['', Validators.required]
+    });
+  }
 
   get products(): Product[] {
     return this.repo.products;
@@ -27,10 +46,10 @@ export class ProductTableComponent implements OnInit {
   }
 
   submitDeleteProduct(id: number) {
-    
+
     this.showDeletePopUp = false;
     this.repo.deleteProduct(id);
-    
+
   }
 
 
@@ -39,15 +58,21 @@ export class ProductTableComponent implements OnInit {
     this.router.navigateByUrl("/detail");
   }
 
-  ngOnInit() {
 
-  }
 
   editProduct(id: number): void {
 
-    this.repo.getProduct(id);
+ 
 
-    console.log(this.product);
+    this.repo.getProductObs(id).subscribe(
+      inProduct => {
+        this.formEditProduct.controls["productName"].setValue(inProduct.name);
+        this.formEditProduct.controls["productCategory"].setValue(inProduct.category);
+        this.formEditProduct.controls["productPrice"].setValue(inProduct.price);
+        // set the current product
+        this.repo.getProduct(id);
+      }
+    );
 
     this.showEditProductPopUp = true;
   }
@@ -57,17 +82,23 @@ export class ProductTableComponent implements OnInit {
     this.showDeletePopUp = true;
   }
 
-  
- 
+
+
 
   submitUpdateProduct(): void {
-    this.showEditProductPopUp = false;
 
-    this.repo.replaceProduct(this.product);
-    this.router.navigate([""]);
+    var newProduct: Product = this.product;
+    newProduct.name = this.formEditProduct.controls["productName"].value as string;
+    newProduct.category = this.formEditProduct.controls["productCategory"].value as string;
+    newProduct.price = this.formEditProduct.controls["productPrice"].value as number;
+
+
+    this.showEditProductPopUp = false;
+    this.repo.replaceProduct(newProduct);
+    this.router.navigate(["productsList"]);
   }
 
- 
+
 
   closePopUp() {
     this.showEditProductPopUp = false;

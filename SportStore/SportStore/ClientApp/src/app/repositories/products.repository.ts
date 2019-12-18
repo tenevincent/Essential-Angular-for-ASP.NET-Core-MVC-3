@@ -3,10 +3,18 @@ import { HttpClient } from '@angular/common/http';
 import { Product } from '../models/product.model';
 import { Filter } from '../models/model/filter';
 import { Supplier } from '../models/supplier.model';
+import { Pagination } from '../models/model/pagination';
+import { Observable } from 'rxjs';
 
 
 const productsUrl = "/api/products";
 const suppliersUrl = "/api/suppliers";
+
+type productsMetadata = {
+  data: Product[],
+  categories: string[];
+}
+
 
 
 @Injectable({
@@ -18,20 +26,24 @@ export class ProductsRepository {
   products: Product[];
   suppliers: Supplier[] = [];
   filter: Filter = new Filter();
+  categories: string[] = [];
+  paginationObject = new Pagination();
 
-
-  constructor(private http: HttpClient, @Inject('BASE_URL') private baseUrl: string) {
-    this.filter.category = "";
+  constructor(private http: HttpClient) {
+    //this.filter.category = "soccer";
     this.filter.related = true;
-    this.getProduct(1);
-    this.getProducts();
+     this.getProducts();
   }
 
   getProduct(id: number) {
-
     this.http.get<Product>(`${productsUrl}/${id}`)
       .subscribe(p => this.product = p);
   }
+
+  getProductObs(id: number): Observable<Product> {
+    return this.http.get<Product>(`${productsUrl}/${id}`);
+  }
+
 
 
   getProducts() {
@@ -42,7 +54,13 @@ export class ProductsRepository {
     if (this.filter.search) {
       url += `&search=${this.filter.search}`;
     }
-    this.http.get<Product[]>(url).subscribe(prods => this.products = prods);
+    url += "&metadata=true";
+
+    this.http.get<productsMetadata>(url)
+      .subscribe(md => {
+        this.products = md.data;
+        this.categories = md.categories;
+      });
   }
 
   getSuppliers() {
@@ -50,7 +68,7 @@ export class ProductsRepository {
       .subscribe(sups => this.suppliers = sups);
   }
 
-  createProduct(prod: Product): void {
+  createProduct(prod: Product) {
     let data = {
       name: prod.name, category: prod.category,
       description: prod.description, price: prod.price,
@@ -64,7 +82,7 @@ export class ProductsRepository {
       });
   }
 
-  createProductAndSupplier(prod: Product, supp: Supplier): void {
+  createProductAndSupplier(prod: Product, supp: Supplier) {
     let data = {
       name: supp.name, city: supp.city, state: supp.state
     };
@@ -80,7 +98,7 @@ export class ProductsRepository {
       });
   }
 
-  replaceProduct(prod: Product): void {
+  replaceProduct(prod: Product) {
     let data = {
       name: prod.name, category: prod.category,
       description: prod.description, price: prod.price,
@@ -90,7 +108,7 @@ export class ProductsRepository {
       .subscribe(() => this.getProducts());
   }
 
-  replaceSupplier(supp: Supplier) : void {
+  replaceSupplier(supp: Supplier) {
     let data = {
       name: supp.name, city: supp.city, state: supp.state
     };
@@ -98,7 +116,7 @@ export class ProductsRepository {
       .subscribe(() => this.getProducts());
   }
 
-  updateProduct(id: number, changes: Map<string, any>): void {
+  updateProduct(id: number, changes: Map<string, any>) {
     let patch = [];
     changes.forEach((value, key) =>
       patch.push({ op: "replace", path: key, value: value }));
@@ -106,18 +124,19 @@ export class ProductsRepository {
       .subscribe(() => this.getProducts());
   }
 
-  deleteProduct(id: number): void {
+  deleteProduct(id: number) {
     this.http.delete(`${productsUrl}/${id}`)
       .subscribe(() => this.getProducts());
   }
 
-  deleteSupplier(id: number): void {
+  deleteSupplier(id: number) {
     this.http.delete(`${suppliersUrl}/${id}`)
       .subscribe(() => {
         this.getProducts();
         this.getSuppliers();
       });
   }
+
 
 
 }

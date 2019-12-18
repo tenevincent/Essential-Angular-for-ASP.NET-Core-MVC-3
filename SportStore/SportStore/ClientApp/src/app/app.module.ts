@@ -18,6 +18,8 @@ import { ProductModule } from './product/product.module';
 import { ProductTableComponent } from './product/product-table/product-table.component';
 import { ProductDetailsComponent } from './product/product-details/product-details.component';
 import { EditProductComponent } from './product/edit-product/edit-product.component';
+import { StoreModule } from './store/store.module';
+import { AppRoutingModule } from './app-routing.module';
 
 @NgModule({
   declarations: [
@@ -34,17 +36,8 @@ import { EditProductComponent } from './product/edit-product/edit-product.compon
     ApiAuthorizationModule,
     ModelModule,
     ProductModule,
-    RouterModule.forRoot([
-      { path: '', component: ProductTableComponent , pathMatch: 'full' },
-      { path: "table", component: ProductTableComponent },
-      { path: "detail", component: ProductDetailsComponent },
-      { path: "detail/:id", component: ProductDetailsComponent },    
-      { path: "edit-product/:id", component: EditProductComponent },    
-       
-      { path: 'counter', component: CounterComponent },
-      { path: 'product', component: CounterComponent },      
-      { path: 'fetch-data', component: FetchDataComponent, canActivate: [AuthorizeGuard] },
-    ])
+    StoreModule,
+    AppRoutingModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthorizeInterceptor, multi: true }

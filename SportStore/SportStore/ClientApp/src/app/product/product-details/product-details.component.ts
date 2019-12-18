@@ -19,7 +19,7 @@ export class ProductDetailsComponent implements OnInit {
     if (id) {
       this.repo.getProduct(id);
     } else {
-      router.navigateByUrl("/");
+      router.navigateByUrl("productsList");
     }
   }
 

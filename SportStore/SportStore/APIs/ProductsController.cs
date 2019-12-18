@@ -59,7 +59,8 @@ namespace SportStore.APIs
         }
 
         [HttpGet]
-        public IEnumerable<Product> GetProducts(string category = "", string search = "", bool related = false)
+        public IActionResult GetProducts(string category, string search,
+               bool related = false, bool metadata = false)
         {
             IQueryable<Product> query = context.Products;
 
@@ -89,13 +90,25 @@ namespace SportStore.APIs
                         p.Ratings.ForEach(r => r.Product = null);
                     }
                 });
-                return data;
+                return metadata ? CreateMetadata(data) : Ok(data);
             }
             else
             {
-                return query;
+                return metadata ? CreateMetadata(query) : Ok(query);
             }
         }
+
+        private IActionResult CreateMetadata(IEnumerable<Product> products)
+        {
+            return Ok(new
+            {
+                data = products,
+                categories = context.Products.Select(p => p.Category)
+                    .Distinct().OrderBy(c => c)
+            });
+        }
+
+
 
         [HttpPost]
         public IActionResult CreateProduct([FromBody] ProductDto pdata)
